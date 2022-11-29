@@ -1,5 +1,6 @@
+/* eslint-disable radix */
 const express = require("express");
-const { loadFile } = require("../utils/utils");
+const { loadFile, updateProduct } = require("../utils/utils");
 
 const router = express.Router();
 
@@ -20,19 +21,38 @@ router.get("/getInventory", async (req, res) => {
 });
 
 router.post("/addInventory", async (req, res) => {
+  let finalInventory;
   try {
     const inventories = loadFile("src/assets/inventory.json");
-    const newInventory = {
-      name: req.body.name,
-      art_id: req.body.art_id,
-      stock: req.body.stock,
-    };
-    let finalInventory = [];
-    finalInventory = inventories.inventory.push(newInventory);
+    inventories.inventory.forEach((el) => {
+      if (req.body.art_id.match(el.art_id)) {
+        const newStock = parseInt(req.body.stock);
+        const existingStock = parseInt(el.stock);
+        const inv = {
+          name: req.body.name,
+          art_id: el.art_id,
+          stock: (newStock + existingStock).toString(),
+        };
+        finalInventory = {
+          inventory: inventories.inventory.concat(inv),
+        };
+      } else {
+        const newInventory = {
+          name: req.body.name,
+          art_id: req.body.art_id,
+          stock: req.body.stock,
+        };
+        finalInventory = {
+          inventory: inventories.inventory.concat(newInventory),
+        };
+      }
+    });
+
     console.log(`Inventories: ${JSON.stringify(finalInventory)}`);
-    res.send(`${JSON.stringify(newInventory)}`);
+    res.send(`${JSON.stringify(finalInventory)}`);
+    updateProduct("src/assets/inventory.json", JSON.stringify(finalInventory));
   } catch (error) {
-    console.log(`Error while reading the json file: ${error}`);
+    console.log(`Error: ${error}`);
   }
 });
 
