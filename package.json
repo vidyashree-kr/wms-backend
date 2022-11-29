@@ -1,0 +1,42 @@
+{
+  "name": "wms-backend",
+  "version": "1.0.0",
+  "description": "Warehouse Management System",
+  "main": "src/index.js",
+  "scripts": {
+    "start": " env-cmd -f ./.env nodemon src/index.js",
+    "build": "cross-env NODE_ENV=development",
+    "test": "jest --watchAll --collectCoverage",
+    "test:nowatch": "jest --watchAll=false --collectCoverage",
+    "lint": "eslint src --ext ts --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vidyashree-kr/wms-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vidyashree-kr/wms-backend/issues"
+  },
+  "homepage": "https://github.com/vidyashree-kr/wms-backend#readme",
+  "dependencies": {
+    "env-cmd": "^10.1.0",
+    "express": "^4.18.2",
+    "fetch": "^1.1.0",
+    "fs": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb": "^17.1.1",
+    "eslint-config-node": "^4.0.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "jest": "^29.3.1",
+    "nodemon": "^2.0.20"
+  }
+}
