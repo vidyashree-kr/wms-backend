@@ -1,7 +1,7 @@
 /* eslint-disable radix */
 /* eslint-disable no-param-reassign */
 const express = require("express");
-const { loadFile, updateProduct, loadProducts } = require("../utils/utils");
+const { loadFile, updateData, loadProducts } = require("../utils/utils");
 
 const router = express.Router();
 
@@ -40,13 +40,14 @@ router.post("/addProduct", async (req, res) => {
     );
     let finalProduct;
     if (matchedProduct) {
-      finalProducts.products.forEach((val) => {
-        if (val === matchedProduct) {
-          val.contain_articles.forEach((art) => {
+      finalProducts.products.forEach((productElement) => {
+        if (productElement === matchedProduct) {
+          productElement.contain_articles.forEach((art) => {
             newProduct.contain_articles.forEach((pr) => {
               if (art.art_id.match(pr.art_id)) {
                 const stock = parseInt(art.stock);
-                art.stock = (stock + 1).toString();
+                const amountOf = parseInt(pr.amount_of);
+                art.stock = (stock + amountOf).toString();
               }
             });
           });
@@ -58,7 +59,106 @@ router.post("/addProduct", async (req, res) => {
     }
     console.log(`products:=======> ${JSON.stringify(finalProduct)}`);
     res.send(`${JSON.stringify(finalProduct)}`);
-    updateProduct("src/assets/products.json", JSON.stringify(finalProduct));
+    updateData("src/assets/products.json", JSON.stringify(finalProduct));
+  } catch (error) {
+    console.log(`Error: ${error}`);
+  }
+});
+
+router.delete("/sellProduct", async (req, res) => {
+  let finalProducts;
+  try {
+    const inventories = loadFile("src/assets/inventory.json");
+    const products = loadFile("src/assets/products.json");
+    finalProducts = await loadProducts(products, inventories);
+    const newProduct = {
+      name: req.body.name,
+      contain_articles: req.body.contain_articles,
+    };
+    const matchedProduct = finalProducts.products.find(
+      (el) => el.name.toLowerCase() === req.body.name.toLowerCase()
+    );
+    const matchedProductIndex = finalProducts.products.indexOf(matchedProduct);
+    let finalProduct;
+    let finalInventory;
+    const finalInv = [];
+    if (matchedProduct) {
+      finalProducts.products.forEach((productElement) => {
+        if (productElement === matchedProduct) {
+          productElement.contain_articles.forEach((articalElement) => {
+            const matchedInventory = inventories.inventory.find(
+              (v) => v.art_id === articalElement.art_id
+            );
+            const matchedInventoryIndex =
+              inventories.inventory.indexOf(matchedInventory);
+            console.log("matchedInventoryIndex", matchedInventoryIndex);
+            newProduct.contain_articles.forEach((pr) => {
+              if (articalElement.art_id.match(pr.art_id)) {
+                const stock = parseInt(articalElement.stock);
+                const amountOf = parseInt(pr.amount_of);
+
+                if (stock === 1) {
+                  console.log(`to be deleted productElement`, productElement);
+                  console.log("matchedProduct", matchedProduct);
+                  // delete inventory
+                  finalInventory = {
+                    inventory: inventories.inventory.splice(
+                      matchedInventoryIndex,
+                      1
+                    ),
+                  };
+                } else if (stock > amountOf) {
+                  console.log(
+                    `stock > amountof before -`,
+                    articalElement.stock
+                  );
+                  // reduce the inventory stock
+                  articalElement.stock = (stock - amountOf).toString();
+
+                  const inv = {
+                    name: matchedInventory.name,
+                    art_id: articalElement.art_id,
+                    stock: articalElement.stock,
+                  };
+                  console.log("after", inv);
+                  finalInv.push(inv);
+                  // finalInv.push(inventories.inventory);
+                  // finalInv.splice(pr.indexOf(), 0, inv);
+                  // console.log("ffffffffffffffff", finalInv);
+                }
+              }
+            });
+          });
+          // delete product
+          finalProducts.products.splice(matchedProductIndex, 1);
+
+          // inventories.inventory.forEach((val) => {
+          //   let inv;
+          //   productElement.contain_articles.forEach((art) => {
+          //     if (val.art_id !== art.art_id) {
+          //       inv = {
+          //         name: val.name,
+          //         art_id: art.art_id,
+          //         stock: art.stock,
+          //       };
+          //       finalInv.push(inv);
+          //     }
+          //   });
+          // });
+
+          finalInventory = { inventory: finalInv };
+        }
+      });
+      finalProduct = finalProducts;
+    } else {
+      console.log(`Product doesn't exists`);
+      res.send(`Product doesn't exists`);
+    }
+    console.log(`inventory:=======> ${JSON.stringify(finalInventory)}`);
+    console.log(`products:=======> ${JSON.stringify(finalProduct)}`);
+    res.send(`${JSON.stringify(finalProduct)}`);
+    updateData("src/assets/products.json", JSON.stringify(finalProduct));
+    updateData("src/assets/inventory.json", JSON.stringify(finalInventory));
   } catch (error) {
     console.log(`Error: ${error}`);
   }

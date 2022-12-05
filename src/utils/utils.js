@@ -6,7 +6,7 @@ const loadFile = (filename) => {
   return JSON.parse(data);
 };
 
-const updateProduct = (filename, data) => {
+const updateData = (filename, data) => {
   fs.writeFileSync(filename, data);
 };
 
@@ -34,4 +34,4 @@ const loadProducts = async (products, inventories) => {
   return finalProducts;
 };
 
-module.exports = { loadFile, updateProduct, loadProducts };
+module.exports = { loadFile, updateData, loadProducts };
