@@ -81,6 +81,7 @@ router.delete("/sellProduct", async (req, res) => {
     const matchedProductIndex = finalProducts.products.indexOf(matchedProduct);
     let finalProduct;
     let finalInventory;
+    const invIds = [];
     const finalInv = [];
     if (matchedProduct) {
       finalProducts.products.forEach((productElement) => {
@@ -91,15 +92,12 @@ router.delete("/sellProduct", async (req, res) => {
             );
             const matchedInventoryIndex =
               inventories.inventory.indexOf(matchedInventory);
-            console.log("matchedInventoryIndex", matchedInventoryIndex);
             newProduct.contain_articles.forEach((pr) => {
               if (articalElement.art_id.match(pr.art_id)) {
                 const stock = parseInt(articalElement.stock);
                 const amountOf = parseInt(pr.amount_of);
 
                 if (stock === 1) {
-                  console.log(`to be deleted productElement`, productElement);
-                  console.log("matchedProduct", matchedProduct);
                   // delete inventory
                   finalInventory = {
                     inventory: inventories.inventory.splice(
@@ -108,10 +106,7 @@ router.delete("/sellProduct", async (req, res) => {
                     ),
                   };
                 } else if (stock > amountOf) {
-                  console.log(
-                    `stock > amountof before -`,
-                    articalElement.stock
-                  );
+                  console.log(`stock > amountof -`, articalElement.stock);
                   // reduce the inventory stock
                   articalElement.stock = (stock - amountOf).toString();
 
@@ -120,11 +115,8 @@ router.delete("/sellProduct", async (req, res) => {
                     art_id: articalElement.art_id,
                     stock: articalElement.stock,
                   };
-                  console.log("after", inv);
                   finalInv.push(inv);
-                  // finalInv.push(inventories.inventory);
-                  // finalInv.splice(pr.indexOf(), 0, inv);
-                  // console.log("ffffffffffffffff", finalInv);
+                  invIds.push(inv.art_id);
                 }
               }
             });
@@ -132,21 +124,11 @@ router.delete("/sellProduct", async (req, res) => {
           // delete product
           finalProducts.products.splice(matchedProductIndex, 1);
 
-          // inventories.inventory.forEach((val) => {
-          //   let inv;
-          //   productElement.contain_articles.forEach((art) => {
-          //     if (val.art_id !== art.art_id) {
-          //       inv = {
-          //         name: val.name,
-          //         art_id: art.art_id,
-          //         stock: art.stock,
-          //       };
-          //       finalInv.push(inv);
-          //     }
-          //   });
-          // });
-
-          finalInventory = { inventory: finalInv };
+          // Update inventories list
+          const remainingInventory = inventories.inventory.filter(
+            (element) => !invIds.includes(element.art_id)
+          );
+          finalInventory = { inventory: finalInv.concat(remainingInventory) };
         }
       });
       finalProduct = finalProducts;
