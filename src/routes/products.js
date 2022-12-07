@@ -117,9 +117,6 @@ router.delete("/sellProduct", async (req, res) => {
                   };
                   finalInv.push(inv);
                   invIds.push(inv.art_id);
-                } else {
-                  console.log(`Stock is insufficient`);
-                  res.send("Stock is insufficient");
                 }
               }
             });
