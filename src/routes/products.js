@@ -96,8 +96,14 @@ router.delete("/sellProduct", async (req, res) => {
               if (articalElement.art_id.match(pr.art_id)) {
                 const stock = parseInt(articalElement.stock);
                 const amountOf = parseInt(pr.amount_of);
+                console.log("1", stock);
+                console.log("2", amountOf);
+                console.log("3", pr.stock);
+                if (parseInt(pr.stock) < amountOf) {
+                  console.log(`stock======================`, stock);
+                  // delete product
+                  finalProducts.products.splice(matchedProductIndex, 1);
 
-                if (stock === 1) {
                   // delete inventory
                   finalInventory = {
                     inventory: inventories.inventory.splice(
@@ -107,6 +113,10 @@ router.delete("/sellProduct", async (req, res) => {
                   };
                 } else if (stock > amountOf) {
                   console.log(`stock > amountof -`, articalElement.stock);
+
+                  // delete product
+                  finalProducts.products.splice(matchedProductIndex, 1);
+
                   // reduce the inventory stock
                   articalElement.stock = (stock - amountOf).toString();
 
@@ -117,12 +127,15 @@ router.delete("/sellProduct", async (req, res) => {
                   };
                   finalInv.push(inv);
                   invIds.push(inv.art_id);
+                } else {
+                  console.log(`Stock is insufficient`);
+                  res.send("Stock is insufficient");
                 }
               }
             });
           });
-          // delete product
-          finalProducts.products.splice(matchedProductIndex, 1);
+          // // delete product
+          // finalProducts.products.splice(matchedProductIndex, 1);
 
           // Update inventories list
           const remainingInventory = inventories.inventory.filter(
@@ -139,8 +152,8 @@ router.delete("/sellProduct", async (req, res) => {
     console.log(`inventory:=======> ${JSON.stringify(finalInventory)}`);
     console.log(`products:=======> ${JSON.stringify(finalProduct)}`);
     res.send(`${JSON.stringify(finalProduct)}`);
-    updateData("src/assets/products.json", JSON.stringify(finalProduct));
-    updateData("src/assets/inventory.json", JSON.stringify(finalInventory));
+    // updateData("src/assets/products.json", JSON.stringify(finalProduct));
+    // updateData("src/assets/inventory.json", JSON.stringify(finalInventory));
   } catch (error) {
     console.log(`Error: ${error}`);
   }
