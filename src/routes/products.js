@@ -96,14 +96,8 @@ router.delete("/sellProduct", async (req, res) => {
               if (articalElement.art_id.match(pr.art_id)) {
                 const stock = parseInt(articalElement.stock);
                 const amountOf = parseInt(pr.amount_of);
-                console.log("1", stock);
-                console.log("2", amountOf);
-                console.log("3", pr.stock);
-                if (parseInt(pr.stock) < amountOf) {
-                  console.log(`stock======================`, stock);
-                  // delete product
-                  finalProducts.products.splice(matchedProductIndex, 1);
 
+                if (parseInt(pr.stock) < amountOf) {
                   // delete inventory
                   finalInventory = {
                     inventory: inventories.inventory.splice(
@@ -112,9 +106,7 @@ router.delete("/sellProduct", async (req, res) => {
                     ),
                   };
                 } else if (stock > amountOf) {
-                  console.log(
-                    `stock > amountof... stock: ${stock}, amountOf: ${amountOf}`
-                  );
+                  console.log(`stock > amountof -`, articalElement.stock);
                   // reduce the inventory stock
                   articalElement.stock = (stock - amountOf).toString();
 
@@ -125,6 +117,9 @@ router.delete("/sellProduct", async (req, res) => {
                   };
                   finalInv.push(inv);
                   invIds.push(inv.art_id);
+                } else {
+                  console.log(`Stock is insufficient`);
+                  res.send("Stock is insufficient");
                 }
               }
             });
