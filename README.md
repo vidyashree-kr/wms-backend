@@ -1,3 +1,75 @@
+# Steps to call api's
+Clone the repository locally
+Run npm install
+Run npm start
+Use postman with below url's to see the response
+
+1. Get all products and quantity of each that is an available with the current inventory
+method: GET
+url: http://localhost:9000/products/getProducts
+Note: using sample products.json file from assets folder for the souces of data
+
+2. Remove(Sell) a product and update the inventory accordingly
+method: DELETE
+url: http://localhost:9000/products/sellProduct
+request body example: send as json
+{
+    "name": "Dining Chair2",
+    "contain_articles": [
+        {
+            "art_id": "1",
+            "amount_of": "4"
+        },
+        {
+            "art_id": "2",
+            "amount_of": "8"
+        },
+        {
+            "art_id": "3",
+            "amount_of": "1"
+        }
+    ]
+}
+
+3. Get all available inventories in wms app
+method: GET
+url: http://localhost:9000/inventory/getInventory
+Note: using sample inventory.json file from assets folder for the souces of data
+
+4. Add new inventory to the system
+method: POST
+url: http://localhost:9000/inventory/addInventory
+request body example: send as json
+{
+    "art_id": "7",
+    "name": "table top2",
+    "stock": "4"
+}
+
+5. Add new product to the system
+method: POST
+url: http://localhost:9000/products/addProduct
+request body example: send as json
+{
+    "name": "Dining Chair2",
+    "contain_articles": [
+        {
+            "art_id": "1",
+            "amount_of": "4"
+        },
+        {
+            "art_id": "2",
+            "amount_of": "8"
+        },
+        {
+            "art_id": "3",
+            "amount_of": "1"
+        }
+    ]
+}
+
+
+#----------------------PROJECT DETAILS-------------------------------
 # wms-backend
 Warehouse Management System
 
@@ -20,4 +92,8 @@ The products should also be loaded from a file, see the attached products.json.Â
 The warehouse should have at least the following functionality;
 * Get all products and quantity of each that is an available with the current inventory
 * Remove(Sell) a product and update the inventory accordingly
+
+
+
+
 

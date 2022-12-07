@@ -106,7 +106,9 @@ router.delete("/sellProduct", async (req, res) => {
                     ),
                   };
                 } else if (stock > amountOf) {
-                  console.log(`stock > amountof -`, articalElement.stock);
+                  console.log(
+                    `stock > amountof... stock: ${stock}, amountOf: ${amountOf}`
+                  );
                   // reduce the inventory stock
                   articalElement.stock = (stock - amountOf).toString();
 
