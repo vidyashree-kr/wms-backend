@@ -73,8 +73,6 @@ request body example: send as json
 # wms-backend
 Warehouse Management System
 
-# Code Assignment
-
 ## Intro
 This assignment will be used as a discussion during a technical interview.
 The primary values for the code we look for are: simplicity, readability, maintainability, testability. It should be easy to scan the code, and rather quickly understand what it’s doing. Pay attention to naming.
